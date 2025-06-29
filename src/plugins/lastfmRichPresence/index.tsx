@@ -23,6 +23,7 @@ import { Logger } from "@utils/Logger";
 import definePlugin, { OptionType } from "@utils/types";
 import { findByPropsLazy } from "@webpack";
 import { ApplicationAssetUtils, FluxDispatcher, Forms } from "@webpack/common";
+import { makeRange } from "@components/PluginSettings/components";
 
 interface ActivityAssets {
     large_image?: string;
@@ -108,6 +109,13 @@ const settings = definePluginSettings({
     apiKey: {
         description: "last.fm api key",
         type: OptionType.STRING,
+    },
+    updateInterval: {
+        description: "how often Vesktop queries LastFM in seconds",
+        type: OptionType.SLIDER,
+        markers: makeRange(1, 10, 1),
+        default: 10,
+        stickToMarkers: true,
     },
     shareUsername: {
         description: "show link to last.fm profile",
@@ -217,7 +225,7 @@ export default definePlugin({
 
     start() {
         this.updatePresence();
-        this.updateInterval = setInterval(() => { this.updatePresence(); }, 16000);
+        this.updateInterval = setInterval(() => { this.updatePresence(); }, 1000 * settings.store.updateInterval);
     },
 
     stop() {
